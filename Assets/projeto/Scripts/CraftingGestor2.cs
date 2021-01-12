@@ -13,12 +13,13 @@ public class CraftingGestor2 : MonoBehaviour
     public GameObject polig_cone;
     public GameObject polig_prism;
     public GameObject polig_esfera;
-    public GameObject polig6;
+    
 
     
 
     public List<GameObject> polig_array;
     public List<GameObject> polig_arrayobjectivos;
+    public List<GameObject> polig_criados;
     //public GameObject test;
     public Button b_Getbase;
     public GameObject sv_formas;
@@ -27,16 +28,16 @@ public class CraftingGestor2 : MonoBehaviour
     public Button b_cone;
     public Button b_cilindro;
     public Button b_prisma;
-    public Button b_piramide;
     public Button b_limpar;
     public Button b_finalizar;
+    public Button b_limpartudo;
     public Slider s_largura;
     public Slider s_altura;
     public Slider s_profundi;
     public InputField t_admin;
     public TextMeshProUGUI t_pontuacao;
     public TextMeshProUGUI t_subirnivel;
-    public TextMeshProUGUI t_tempo;
+    public TextMeshProUGUI t_score;
 
     public float scale;
     public int caso = 0;
@@ -45,7 +46,7 @@ public class CraftingGestor2 : MonoBehaviour
     private GameObject polig_objectivo;
     private GameObject polig_criado;
 
-    private float tempo = 60.0f;
+    //private float tempo = 60.0f;
 
     public Camera camera;
 
@@ -61,7 +62,10 @@ public class CraftingGestor2 : MonoBehaviour
     private bool Nivel2 = false; // para ser o trigger do menu para o jogo
     private bool primeiroclick = false;
     private bool etapa1 = false;
+    bool posomexer = false;
+    bool completo = false;
 
+    private int score_pontos = 0;
     public bool Nivel2_rodar = false;
 
 	// Start is called before the first frame update
@@ -91,7 +95,7 @@ public class CraftingGestor2 : MonoBehaviour
 
         t_pontuacao.gameObject.SetActive(false);
         t_subirnivel.gameObject.SetActive(false);
-        t_tempo.gameObject.SetActive(false);
+        t_score.gameObject.SetActive(false);
 
         sv_formas.gameObject.SetActive(false);
 
@@ -99,14 +103,19 @@ public class CraftingGestor2 : MonoBehaviour
         b_Getbase.onClick.AddListener(TaskOnClick1);
         b_limpar.onClick.AddListener(TaskOnClick2);
         b_finalizar.onClick.AddListener(TaskOnClick3);
+        b_limpartudo.onClick.AddListener(TaskOnClick4);
 
         b_cubo.onClick.AddListener(TaskOnClick101);
         b_esfera.onClick.AddListener(TaskOnClick102);
         b_cone.onClick.AddListener(TaskOnClick103);
         b_cilindro.onClick.AddListener(TaskOnClick104);
         b_prisma.onClick.AddListener(TaskOnClick105);
-        b_piramide.onClick.AddListener(TaskOnClick106);
+        
 
+
+
+        t_score.text = "Pontos : 0";
+        score_pontos = 0;
 
         //Debug.Log(GameObject.FindGameObjectsWithTag("editavel").Length);
 
@@ -124,13 +133,9 @@ public class CraftingGestor2 : MonoBehaviour
 
     }
 
-	private void TaskOnClick106()
-	{
-        caso = 6;
-        crafter();
-        sv_formas.gameObject.SetActive(false);
-        
-	}
+	
+
+	
 
 	private void TaskOnClick105()
 	{
@@ -188,7 +193,8 @@ public class CraftingGestor2 : MonoBehaviour
 	{
         if (primeiroclick)
         {
-            if (GameObject.FindGameObjectsWithTag("editavel").Length <= 3)
+            Debug.Log(GameObject.FindGameObjectsWithTag("editavel").Length);
+            if (GameObject.FindGameObjectsWithTag("editavel").Length == 8)
             {
 
 
@@ -198,18 +204,18 @@ public class CraftingGestor2 : MonoBehaviour
                 
 
                 t_pontuacao.gameObject.SetActive(false);
-
-                polig_criado = Instantiate(polig_array[UnityEngine.Random.Range(0, 3)], new Vector3(1, 3, 29), Quaternion.identity);
+                crafter();
+                //polig_criado = Instantiate(polig_array[UnityEngine.Random.Range(0, 3)], new Vector3(1, 3, 29), Quaternion.identity);
                 s_altura.gameObject.SetActive(true);
                 s_largura.gameObject.SetActive(true);
                 if (Nivel2)
                 {
                     s_profundi.gameObject.SetActive(true);
                 }
-                s_largura.minValue = polig_criado.transform.localScale.y;
-                s_altura.minValue = polig_criado.transform.localScale.x;
-                t_tempo.gameObject.SetActive(true);
-                t_tempo.text = "60.0";
+                //s_largura.minValue = polig_criado.transform.localScale.y;
+                //s_altura.minValue = polig_criado.transform.localScale.x;
+                t_score.gameObject.SetActive(true);
+                //t_tempo.text = "60.0";
             }
             else
             {
@@ -230,12 +236,12 @@ public class CraftingGestor2 : MonoBehaviour
     private void TaskOnClick2()
     {
         t_pontuacao.gameObject.SetActive(false);
-        t_tempo.gameObject.SetActive(false);
+        //t_score.gameObject.SetActive(false);
         b_Getbase.interactable = true;
-        tempo = 60.0f;
+        //tempo = 60.0f;
 
 
-        if (GameObject.FindGameObjectsWithTag("editavel").Length <= 3)
+        if (GameObject.FindGameObjectsWithTag("editavel").Length == 8)
         {
             Debug.Log("Nada para Limpar!");
 
@@ -247,13 +253,19 @@ public class CraftingGestor2 : MonoBehaviour
 				if (item.name.Contains("Clone"))
 				{
                     Destroy(item);
+                    polig_criados.RemoveAt((polig_criados.Count-1));
                     s_altura.gameObject.SetActive(false);
                     s_largura.gameObject.SetActive(false);
                     s_profundi.gameObject.SetActive(false);
+                    primeiroclick = false;
                     return;
 
                 }
-                Debug.Log("Nada para Limpar!");
+				else
+				{
+                    Debug.Log("Nada para Limpar!");
+                }
+                
             }
             
         }
@@ -263,49 +275,78 @@ public class CraftingGestor2 : MonoBehaviour
     private void TaskOnClick3()
     {
 
-        entrega();
+        entregar();
         
 
     }
 
-	private void entrega()
-	{
-        polig_objectivo = teste.transform.GetChild(partes).gameObject;
-        var obj = polig_objectivo.transform.lossyScale;
-        t_pontuacao.alpha = 1 ;
-        t_pontuacao.gameObject.SetActive(false);
-
-        if (Nivel2)
+    private void TaskOnClick4()
+    {
+        foreach (var item in polig_criados)
         {
-            if (polig_criado != null)
+            Destroy(item);
+            partes = 0;
+            primeiroclick = false;
+            b_Getbase.interactable = true;
+            completo = false;
+        }
+        polig_criados.Clear();
+    }
+
+    private void entrega()
+	{
+        //t_pontuacao.alpha = 1;
+        //t_pontuacao.ForceMeshUpdate();
+        t_pontuacao.CrossFadeAlpha(1,0,false);
+        
+            polig_objectivo = teste.transform.GetChild(partes).gameObject;
+            var obj = polig_objectivo.transform.lossyScale;
+            
+            t_pontuacao.gameObject.SetActive(false);
+        if (completo)
+        {
+
+            if (Nivel2)
             {
-                var cri = polig_criado.transform.localScale;
-                var dif = obj - cri;
-
-                Debug.Log(dif.x);
-                Debug.Log(dif.y);
-                Debug.Log(dif.z);
-                Debug.Log(polig_objectivo.transform.lossyScale);
-                Debug.Log(polig_criado.transform.localScale);
-                Debug.Log("-----------------------------------------------");
-                Debug.Log(teste.transform.GetChild(0).transform.lossyScale + "Cubo base");
-                Debug.Log(teste.transform.GetChild(1).transform.lossyScale + "Cubo 1");
-                Debug.Log(teste.transform.GetChild(2).transform.lossyScale + "Cubo 2");
-
-                if (dif.x < 5 && dif.y < 5 && dif.z < 5)
+                if (polig_criado != null)
                 {
-                    if (dif.x > -5 && dif.y > -5 && dif.z > -5)
+                    var cri = polig_criado.transform.localScale;
+                    var dif = obj - cri;
+
+                    Debug.Log(dif.x);
+                    Debug.Log(dif.y);
+                    Debug.Log(dif.z);
+                    Debug.Log(polig_objectivo.transform.lossyScale);
+                    Debug.Log(polig_criado.transform.localScale);
+                    Debug.Log("-----------------------------------------------");
+                    Debug.Log(teste.transform.GetChild(0).transform.lossyScale + "Cubo base");
+                    Debug.Log(teste.transform.GetChild(1).transform.lossyScale + "Cubo 1");
+                    Debug.Log(teste.transform.GetChild(2).transform.lossyScale + "Cubo 2");
+
+                    if (dif.x < 5 && dif.y < 5 && dif.z < 5)
                     {
+                        if (dif.x > -5 && dif.y > -5 && dif.z > -5)
+                        {
 
-                        Debug.Log("Objecto está igual !");
-                        tempo += 10f;
+                            Debug.Log("Objecto está igual !");
+                            //tempo += 10f;
 
-                        var pontos = calcPontos(dif.x, dif.y, dif.z);
-                        t_pontuacao.gameObject.SetActive(true);
-                        t_pontuacao.text = pontos;
-                        
-                        t_pontuacao.CrossFadeAlpha(0.0f, 7, true);
-                        
+                            var pontos = calcPontos(dif.x, dif.y, dif.z);
+                            t_pontuacao.gameObject.SetActive(true);
+                            t_pontuacao.text = pontos;
+                            t_score.text = "Pontos :" + score_pontos.ToString();
+
+                            t_pontuacao.CrossFadeAlpha(0.0f, 7, true);
+
+
+                        }
+                        else
+                        {
+                            Debug.Log("Objecto não está igual !");
+                            t_pontuacao.gameObject.SetActive(true);
+                            t_pontuacao.text = "Objecto não está igual !";
+                            t_pontuacao.CrossFadeAlpha(0.0f, 7, true);
+                        }
 
                     }
                     else
@@ -315,47 +356,48 @@ public class CraftingGestor2 : MonoBehaviour
                         t_pontuacao.text = "Objecto não está igual !";
                         t_pontuacao.CrossFadeAlpha(0.0f, 7, true);
                     }
-
                 }
                 else
                 {
-                    Debug.Log("Objecto não está igual !");
+                    Debug.Log("Têm que criar primeiro!");
                     t_pontuacao.gameObject.SetActive(true);
-                    t_pontuacao.text = "Objecto não está igual !";
+                    t_pontuacao.text = "Têm que criar primeiro!";
                     t_pontuacao.CrossFadeAlpha(0.0f, 7, true);
                 }
             }
             else
             {
-                Debug.Log("Têm que criar primeiro!");
-                t_pontuacao.gameObject.SetActive(true);
-                t_pontuacao.text = "Têm que criar primeiro!";
-                t_pontuacao.CrossFadeAlpha(0.0f, 7, true);
-            }
-        }
-        else
-        {
-            if (polig_criado != null)
-            {
-                var cri = polig_criado.transform.localScale;
-                var dif = obj - cri;
-
-                Debug.Log(dif.x);
-                Debug.Log(dif.y);
-                Debug.Log(polig_objectivo.transform.localScale);
-                Debug.Log(polig_criado.transform.localScale);
-
-                if (dif.x < 3 && dif.y < 3)
+                if (polig_criado != null)
                 {
-                    if (dif.x > -3 && dif.y > -3)
+                    var cri = polig_criado.transform.localScale;
+                    var dif = obj - cri;
+
+                    Debug.Log(dif.x);
+                    Debug.Log(dif.y);
+                    Debug.Log(polig_objectivo.transform.localScale);
+                    Debug.Log(polig_criado.transform.localScale);
+
+                    if (dif.x < 3 && dif.y < 3)
                     {
+                        if (dif.x > -3 && dif.y > -3)
+                        {
 
-                        Debug.Log("Objecto está igual !");
-                        t_pontuacao.gameObject.SetActive(true);
+                            Debug.Log("Objecto está igual !");
+                            t_pontuacao.gameObject.SetActive(true);
 
-                        var pontos = calcPontos(dif.x, dif.y, 0);
-                        t_pontuacao.text = pontos;
-                        
+                            var pontos = calcPontos(dif.x, dif.y, 0);
+                            t_pontuacao.text = pontos;
+                            t_score.text = "Pontos : " + score_pontos.ToString();
+
+                        }
+                        else
+                        {
+                            Debug.Log("Objecto não está igual !");
+                            t_pontuacao.gameObject.SetActive(true);
+                            t_pontuacao.text = "Objecto não está igual!";
+                            t_pontuacao.CrossFadeAlpha(0.0f, 7, true);
+                        }
+
                     }
                     else
                     {
@@ -363,20 +405,46 @@ public class CraftingGestor2 : MonoBehaviour
                         t_pontuacao.gameObject.SetActive(true);
                         t_pontuacao.text = "Objecto não está igual!";
                         t_pontuacao.CrossFadeAlpha(0.0f, 7, true);
-                    }
 
+                    }
                 }
                 else
                 {
-                    Debug.Log("Objecto não está igual !");
+                    Debug.Log("Têm que criar primeiro!");
                     t_pontuacao.gameObject.SetActive(true);
-                    t_pontuacao.text = "Objecto não está igual!";
+                    t_pontuacao.text = "Têm que criar primeiro!";
                     t_pontuacao.CrossFadeAlpha(0.0f, 7, true);
-
                 }
             }
-            else
-            {
+
+        }
+		else
+		{
+			if (polig_criado != null)
+			{
+                
+                polig_criado.tag = "Untagged";
+                b_Getbase.interactable = true;
+                s_altura.gameObject.SetActive(false);
+                s_largura.gameObject.SetActive(false);
+                if (Nivel2)
+                {
+                    s_profundi.gameObject.SetActive(false);
+                }
+
+                //t_score.gameObject.SetActive(false);
+                etapa1 = true;
+                primeiroclick = false;
+                t_admin.text = "";
+                partes += 1;
+                Debug.Log(partes);
+				if (partes == 2)
+				{
+                    completo = true;
+				}
+            }
+			else
+			{
                 Debug.Log("Têm que criar primeiro!");
                 t_pontuacao.gameObject.SetActive(true);
                 t_pontuacao.text = "Têm que criar primeiro!";
@@ -390,6 +458,7 @@ public class CraftingGestor2 : MonoBehaviour
 		if (x == 0 && y == 0 && z ==0)
 		{
             // Perfeito
+            score_pontos += 50;
             return "100%"; 
 		}
 		else
@@ -397,27 +466,32 @@ public class CraftingGestor2 : MonoBehaviour
 			if (x <= 1f && y <= 1f && z <= 1f)
 			{
                 //90%
-                return "90%";
+                score_pontos += 50;
+                return "100%";
             }
 			else if (x <= 2f && y <= 2f && z <= 2f)
 			{
                 //80%
-                return "80%";
+                score_pontos += 40;
+                return "90%";
             }
 			else if (x <= 3f && y <= 3f && z <= 3f)
 			{
                 //70%
-                return "70%";
+                score_pontos += 30;
+                return "80%";
             }
 			else if (x <= 4f && y <= 4f && z <= 4f)
 			{
                 //60%
-                return "60%";
+                score_pontos += 20;
+                return "70%";
             }
 			else
 			{
                 //50%   
-                return "50%";
+                score_pontos += 10;
+                return "60%";
             }
 		}
 	}
@@ -570,7 +644,8 @@ public class CraftingGestor2 : MonoBehaviour
 
                 break;
 		}
-        
+        polig_criados.Add(polig_criado);
+        t_score.CrossFadeColor(Color.black, 4f, true, true);
     }
     // Update is called once per frame
 
@@ -582,22 +657,162 @@ public class CraftingGestor2 : MonoBehaviour
         {
             s_profundi.gameObject.SetActive(true);
         }
-        s_largura.minValue = polig_criado.transform.localScale.y;
-        s_altura.minValue = polig_criado.transform.localScale.x;
-        t_tempo.gameObject.SetActive(true);
-        t_tempo.text = "60.0";
-        Debug.Log("cheguei aqui!");
+        //s_largura.minValue = polig_criado.transform.localScale.y;
+        //s_altura.minValue = polig_criado.transform.localScale.x;
+        t_score.gameObject.SetActive(true);
+        //t_tempo.text = "60.0";
+        
+    }
+
+    void entregar() 
+    {
+
+        t_pontuacao.CrossFadeAlpha(1, 0, false);
+
+        polig_objectivo = teste;
+        var obj = polig_objectivo.transform.lossyScale;
+
+        t_pontuacao.gameObject.SetActive(false);
+
+        if (polig_criado != null)
+        {
+
+
+            if (completo)
+            {
+                t_pontuacao.gameObject.SetActive(true);
+                //var cri = polig_criado.transform.localScale;
+                //var dif = obj - cri;
+                t_pontuacao.text = avaliação(polig_criados, polig_objectivo);
+                t_score.text = "Pontos :"+score_pontos.ToString();
+                t_score.color = Color.white;
+				if (score_pontos > 0)
+				{
+                    t_score.CrossFadeColor(Color.green, 4f, true, true);
+				}
+				else
+				{
+                    t_score.CrossFadeColor(Color.red, 4f, true, true);
+                }
+                t_pontuacao.CrossFadeAlpha(0.0f, 7, true);
+                foreach (var item in polig_criados)
+                {
+                    Destroy(item);
+                    partes = 0;
+                    primeiroclick = false;
+                    b_Getbase.interactable = true;
+                    completo = false;
+                }
+                polig_criados.Clear();
+                Destroy(teste);
+                teste = Instantiate(polig_arrayobjectivos[UnityEngine.Random.Range(0, 5)], new Vector3(0, 0, 0), Quaternion.identity);
+
+                teste.transform.transform.localScale = new Vector3(UnityEngine.Random.Range(50, 150), UnityEngine.Random.Range(50, 150), UnityEngine.Random.Range(50, 150));
+
+            }
+            else
+            {
+                //polig_criados.Add(polig_criado);
+                polig_criado.tag = "Untagged";
+                b_Getbase.interactable = true;
+                s_altura.gameObject.SetActive(false);
+                s_largura.gameObject.SetActive(false);
+                s_profundi.gameObject.SetActive(false);
+                
+
+                //t_score.gameObject.SetActive(false);
+                etapa1 = true;
+                primeiroclick = false;
+                partes += 1;
+                Debug.Log(partes);
+                if (partes == 2)
+                {
+                    completo = true;
+                }
+            }
+        }
+        else 
+        {
+            Debug.Log("Têm que criar primeiro!");
+            t_pontuacao.gameObject.SetActive(true);
+            t_pontuacao.text = "Têm que criar primeiro!";
+            t_pontuacao.CrossFadeAlpha(0.0f, 7, true);
+        }
+    
+    }
+
+    string avaliação(List<GameObject> criados, GameObject objetivo) 
+    {
+        int i = 0;
+        int j = 1;
+        string res = "";
+        
+
+		foreach (var item in criados)
+		{
+            Debug.Log(criados.Count);
+            Debug.Log(i);
+            var dif = item.transform.localScale - objetivo.transform.GetChild(i).transform.lossyScale;
+            if (dif.x <= 1f && dif.y <= 1f && dif.z <= 1f && dif.x >= -1f && dif.y >= -1f && dif.z >= -1f)
+            {
+                
+                    //90%
+                    score_pontos += 50;
+                    res += "100% no poligno " + (j).ToString() + "\n";
+                
+            }
+            else if (dif.x <= 2f && dif.y <= 2f && dif.z <= 2f && dif.x >= -2f && dif.y >= -2f && dif.z >= -2f)
+            {
+                //80%
+                score_pontos += 40;
+                res += "90% no poligno " + (j).ToString() + "\n";
+            }
+            else if (dif.x <= 3f && dif.y <= 3f && dif.z <= 3f && dif.x >= -3f && dif.y >= -3f && dif.z >= -3f)
+            {
+                //70%
+                score_pontos += 30;
+                res += "80% no poligno " + (j).ToString() + "\n";
+            }
+            else if (dif.x <= 4f && dif.y <= 4f && dif.z <= 4f && dif.x >= -4f && dif.y >= -4f && dif.z >= -4f)
+            {
+                //60%
+                score_pontos += 20;
+                res += "70% no poligno " + (j).ToString() + "\n";
+            }
+            else if (dif.x <= 5f && dif.y <= 5f && dif.z <= 5f && dif.x >= -5f && dif.y >= -5f && dif.z >= -5f)
+            {
+                //50%   
+                score_pontos += 10;
+                res += "60% no poligno " + (j).ToString() + "\n";
+            }
+			else
+			{
+                score_pontos -= 10;
+                res += "Errado no poligno " + (j).ToString() + "\n";
+            }
+
+			if (i < 2)
+			{
+                i++;
+                j++;
+            }
+            
+        }
+        Debug.Log(res);
+        return res;
     }
 
     private void Update()
 	{
-
+        
         camera.transform.LookAt(teste.transform.position);
-        tempo -= Time.deltaTime;
-        t_tempo.text = tempo.ToString();
+        //tempo -= Time.deltaTime;
+        //t_tempo.text = tempo.ToString();
 
         admincode(t_admin);
+
         
+
         if (Nivel2_rodar)
         {
             //Debug.Log(camera.transform.position);
@@ -606,7 +821,7 @@ public class CraftingGestor2 : MonoBehaviour
 
 
 
-            if (camera.transform.position.x < -230)
+            if (camera.transform.position.x < -300)
             {
                 Nivel2_rodar = false;
                 Destroy(polig_objectivo);
@@ -616,14 +831,63 @@ public class CraftingGestor2 : MonoBehaviour
 
 
                 t_subirnivel.gameObject.SetActive(false);
-
+                posomexer = true;
             }
         }
         else { }
 
-        
 		
+        
+
+		if (posomexer)
+		{
+            
+            if (Input.GetKey(KeyCode.Keypad8))
+            {
+                
+                camera.transform.Translate(Vector3.up * 150 * Time.deltaTime);
+                //Debug.Log("up arrow key is held down");
+            }
+
+            if (Input.GetKey(KeyCode.Keypad5))
+            {
+                camera.transform.Translate(Vector3.down * 150 * Time.deltaTime);
+                //Debug.Log("down arrow key is held down");
+            }
+
+            if (Input.GetKey(KeyCode.Keypad4))
+            {
+                camera.transform.RotateAround(teste.transform.position, Vector3.up, 70 * Time.deltaTime);
+                //print("left arrow key is held down");
+            }
+
+            if (Input.GetKey(KeyCode.Keypad6))
+            {
+                camera.transform.RotateAround(teste.transform.position, Vector3.down, 70 * Time.deltaTime);
+                //print("right arrow key is held down");
+            }
+            if (Input.GetAxis("Mouse ScrollWheel") > 0f) // forward
+            {
+                camera.transform.Translate(Vector3.forward * 1000 * Time.deltaTime);
+            }
+            else if (Input.GetAxis("Mouse ScrollWheel") < 0f) // backwards
+            {
+                camera.transform.Translate(Vector3.back * 1000 * Time.deltaTime);
+            }
+        }
+
+
+        if (polig_criados != null) 
+        {
+            b_limpartudo.interactable = true;
+        }
+		else
+		{
+            b_limpartudo.interactable = false;
+        }
 	}
+
+
 
 	private void admincode(InputField t_admin)
 	{
@@ -637,7 +901,7 @@ public class CraftingGestor2 : MonoBehaviour
                 t_admin.text = "";
                 Nivel2 = true;
                 Nivel2_rodar = true;
-                t_tempo.gameObject.SetActive(false);
+                t_score.gameObject.SetActive(false);
 
                 Destroy(polig_criado);
                 break;
@@ -683,12 +947,12 @@ public class CraftingGestor2 : MonoBehaviour
                     s_profundi.gameObject.SetActive(false);
                 }
                 
-                t_tempo.gameObject.SetActive(false);
+                t_score.gameObject.SetActive(false);
                 etapa1 = true;
                 primeiroclick = false;
                 t_admin.text = "";
                 partes += 1;
-
+                Debug.Log(partes);
 
                 break;
             default:
