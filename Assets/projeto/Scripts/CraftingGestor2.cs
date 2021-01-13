@@ -48,6 +48,8 @@ public class CraftingGestor2 : MonoBehaviour
 
     //private float tempo = 60.0f;
 
+    
+
     public Camera camera;
 
     public GameObject teste;
@@ -64,6 +66,7 @@ public class CraftingGestor2 : MonoBehaviour
     private bool etapa1 = false;
     bool posomexer = false;
     bool completo = false;
+    
 
     private int score_pontos = 0;
     public bool Nivel2_rodar = false;
@@ -125,7 +128,7 @@ public class CraftingGestor2 : MonoBehaviour
         //polig_objectivo.transform.localScale = new Vector3(UnityEngine.Random.Range(25, 100), UnityEngine.Random.Range(25, 100), 29);
 
         teste = Instantiate(polig_arrayobjectivos[UnityEngine.Random.Range(0, 2)], new Vector3(0, 0, 0), Quaternion.identity);
-        teste.transform.transform.localScale = new Vector3(UnityEngine.Random.Range(25, 100), UnityEngine.Random.Range(25, 100), 29);
+        teste.transform.transform.localScale = new Vector3(UnityEngine.Random.Range(25, 100), UnityEngine.Random.Range(25, 100), UnityEngine.Random.Range(25, 100));
 
         //s_largura = GameObject.Find("Slider_largura").GetComponent<Slider>();
 
@@ -634,10 +637,6 @@ public class CraftingGestor2 : MonoBehaviour
                     Ac_interface();
                 }
                 break;
-            
-            case 6:
-                
-                break;
 
                
 			default:
@@ -645,7 +644,7 @@ public class CraftingGestor2 : MonoBehaviour
                 break;
 		}
         polig_criados.Add(polig_criado);
-        t_score.CrossFadeColor(Color.black, 4f, true, true);
+        //t_score.CrossFadeColor(Color.black, 4f, true, true);
     }
     // Update is called once per frame
 
@@ -686,14 +685,7 @@ public class CraftingGestor2 : MonoBehaviour
                 t_pontuacao.text = avaliação(polig_criados, polig_objectivo);
                 t_score.text = "Pontos :"+score_pontos.ToString();
                 t_score.color = Color.white;
-				if (score_pontos > 0)
-				{
-                    t_score.CrossFadeColor(Color.green, 4f, true, true);
-				}
-				else
-				{
-                    t_score.CrossFadeColor(Color.red, 4f, true, true);
-                }
+				
                 t_pontuacao.CrossFadeAlpha(0.0f, 7, true);
                 foreach (var item in polig_criados)
                 {
@@ -707,7 +699,7 @@ public class CraftingGestor2 : MonoBehaviour
                 Destroy(teste);
                 teste = Instantiate(polig_arrayobjectivos[UnityEngine.Random.Range(0, 5)], new Vector3(0, 0, 0), Quaternion.identity);
 
-                teste.transform.transform.localScale = new Vector3(UnityEngine.Random.Range(50, 150), UnityEngine.Random.Range(50, 150), UnityEngine.Random.Range(50, 150));
+                teste.transform.transform.localScale = new Vector3(UnityEngine.Random.Range(25, 150), UnityEngine.Random.Range(25, 100), UnityEngine.Random.Range(25, 100));
 
             }
             else
@@ -836,8 +828,17 @@ public class CraftingGestor2 : MonoBehaviour
         }
         else { }
 
-		
+		if (score_pontos < 0)
+		{
+            t_score.faceColor = Color.red;
+		}
+		else
+		{
+            t_score.faceColor = Color.black;
+            
+		}
         
+       
 
 		if (posomexer)
 		{
@@ -866,14 +867,17 @@ public class CraftingGestor2 : MonoBehaviour
                 camera.transform.RotateAround(teste.transform.position, Vector3.down, 70 * Time.deltaTime);
                 //print("right arrow key is held down");
             }
-            if (Input.GetAxis("Mouse ScrollWheel") > 0f) // forward
-            {
-                camera.transform.Translate(Vector3.forward * 1000 * Time.deltaTime);
-            }
-            else if (Input.GetAxis("Mouse ScrollWheel") < 0f) // backwards
-            {
-                camera.transform.Translate(Vector3.back * 1000 * Time.deltaTime);
-            }
+			
+                if (Input.GetAxis("Mouse ScrollWheel") > 0f && Vector3.Distance(camera.transform.position, teste.transform.position) > 100) // forward
+                {
+                    camera.transform.Translate(Vector3.forward * 1000 * Time.deltaTime);
+                }
+                else if (Input.GetAxis("Mouse ScrollWheel") < 0f && Vector3.Distance(camera.transform.position, teste.transform.position) < 1000) // backwards
+                {
+                    camera.transform.Translate(Vector3.back * 1000 * Time.deltaTime);
+                }
+            
+           
         }
 
 
@@ -885,11 +889,14 @@ public class CraftingGestor2 : MonoBehaviour
 		{
             b_limpartudo.interactable = false;
         }
-	}
+
+        Debug.Log(Vector3.Distance(camera.transform.position,teste.transform.position));
+
+    }
 
 
 
-	private void admincode(InputField t_admin)
+    private void admincode(InputField t_admin)
 	{
 		switch (t_admin.text)
 		{
@@ -919,7 +926,7 @@ public class CraftingGestor2 : MonoBehaviour
                     Destroy(teste);
                     teste = Instantiate(polig_arrayobjectivos[UnityEngine.Random.Range(0, 5)], new Vector3(0, 0, 0), Quaternion.identity);
                     
-                    teste.transform.transform.localScale = new Vector3(UnityEngine.Random.Range(50, 150), UnityEngine.Random.Range(50, 150), UnityEngine.Random.Range(50, 150));
+                    teste.transform.transform.localScale = new Vector3(UnityEngine.Random.Range(25, 100), UnityEngine.Random.Range(25, 100), UnityEngine.Random.Range(25, 100));
                 }
 				else
 				{
@@ -932,7 +939,7 @@ public class CraftingGestor2 : MonoBehaviour
 
                     Destroy(teste);
                     teste = Instantiate(polig_arrayobjectivos[UnityEngine.Random.Range(0, 5)], new Vector3(0, 0, 0), Quaternion.identity);
-                    teste.transform.transform.localScale = new Vector3(UnityEngine.Random.Range(25, 100), UnityEngine.Random.Range(25, 100), 29);
+                    teste.transform.transform.localScale = new Vector3(UnityEngine.Random.Range(25, 100), UnityEngine.Random.Range(25, 100), UnityEngine.Random.Range(25, 100));
                 }
                 break;
 
