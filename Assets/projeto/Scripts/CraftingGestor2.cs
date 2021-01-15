@@ -31,6 +31,14 @@ public class CraftingGestor2 : MonoBehaviour
     public Button b_limpar;
     public Button b_finalizar;
     public Button b_limpartudo;
+    public Button b_jogar;
+    public Button b_sair;
+    public Button b_opcoes;
+    public Button b_zoomin;
+    public Button b_zoomout;
+    public Button b_direita;
+    public Button b_esquerda;
+    public Button b_menu;
     public Slider s_largura;
     public Slider s_altura;
     public Slider s_profundi;
@@ -57,6 +65,10 @@ public class CraftingGestor2 : MonoBehaviour
     public GameObject teste3;
     public GameObject teste4;
     public GameObject teste5;
+
+    public Canvas cavas_jogo;
+    public Canvas cavas_menu;
+    public Canvas cavas_opcoes;
 
 
 
@@ -102,18 +114,33 @@ public class CraftingGestor2 : MonoBehaviour
 
         sv_formas.gameObject.SetActive(false);
 
+        cavas_jogo.gameObject.SetActive(false);
+        cavas_menu.gameObject.SetActive(true);
+
 
         b_Getbase.onClick.AddListener(TaskOnClick1);
         b_limpar.onClick.AddListener(TaskOnClick2);
         b_finalizar.onClick.AddListener(TaskOnClick3);
         b_limpartudo.onClick.AddListener(TaskOnClick4);
+        b_menu.onClick.AddListener(TaskOnClick5);
 
         b_cubo.onClick.AddListener(TaskOnClick101);
         b_esfera.onClick.AddListener(TaskOnClick102);
         b_cone.onClick.AddListener(TaskOnClick103);
         b_cilindro.onClick.AddListener(TaskOnClick104);
         b_prisma.onClick.AddListener(TaskOnClick105);
+
+        b_jogar.onClick.AddListener(TaskOnClick201);
+        b_opcoes.onClick.AddListener(TaskOnClick202);
+        b_sair.onClick.AddListener(TaskOnClick203);
         
+
+        b_zoomin.onClick.AddListener(TaskOnClick301);
+        b_zoomout.onClick.AddListener(TaskOnClick302);
+        b_direita.onClick.AddListener(TaskOnClick303);
+        b_esquerda.onClick.AddListener(TaskOnClick304);
+
+
 
 
 
@@ -136,9 +163,73 @@ public class CraftingGestor2 : MonoBehaviour
 
     }
 
-	
+	private void TaskOnClick5()
+	{
+        cavas_jogo.gameObject.SetActive(false);
+        cavas_menu.gameObject.SetActive(true);
+        Debug.Log("Teste voltar");
+    }
 
-	
+	private void TaskOnClick304()
+	{
+        camera.transform.RotateAround(teste.transform.position, Vector3.up, 5000 * Time.deltaTime);
+        Debug.Log("esquerda");
+    }
+
+	private void TaskOnClick303()
+	{
+        camera.transform.RotateAround(teste.transform.position, Vector3.down, 5000 * Time.deltaTime);
+        Debug.Log("direita");
+    }
+
+	private void TaskOnClick302()
+	{
+        if (Vector3.Distance(camera.transform.position, teste.transform.position) > 100)
+        {
+            b_zoomin.interactable = true;
+            camera.transform.Translate(Vector3.back * 5000 * Time.deltaTime);
+        }
+        else
+        {
+            b_zoomin.interactable = false;
+        }
+        Debug.Log("zoom in");
+
+    }
+
+	private void TaskOnClick301()
+	{
+		
+        if (Vector3.Distance(camera.transform.position, teste.transform.position) < 1000)
+        {
+            b_zoomout.interactable = true;
+            camera.transform.Translate(Vector3.forward * 5000 * Time.deltaTime);
+        }
+        else
+        {
+            b_zoomout.interactable = false;
+        }
+        Debug.Log("zoom out");
+    }
+        
+	private void TaskOnClick203()
+	{
+		throw new NotImplementedException();
+	}
+
+	private void TaskOnClick202()
+	{
+        cavas_menu.gameObject.SetActive(false);
+        cavas_opcoes.gameObject.SetActive(true);
+        Debug.Log("Teste opcoes");
+    }
+
+	private void TaskOnClick201()
+	{
+        cavas_jogo.gameObject.SetActive(true);
+        cavas_menu.gameObject.SetActive(false);
+        Debug.Log("Teste jogar");
+    }
 
 	private void TaskOnClick105()
 	{
@@ -840,45 +931,45 @@ public class CraftingGestor2 : MonoBehaviour
         
        
 
-		if (posomexer)
-		{
+		//if (posomexer)
+		//{
             
-            if (Input.GetKey(KeyCode.Keypad8))
-            {
+  //          if (Input.GetKey(KeyCode.Keypad8))
+  //          {
                 
-                camera.transform.Translate(Vector3.up * 150 * Time.deltaTime);
-                //Debug.Log("up arrow key is held down");
-            }
+  //              camera.transform.Translate(Vector3.up * 150 * Time.deltaTime);
+  //              //Debug.Log("up arrow key is held down");
+  //          }
 
-            if (Input.GetKey(KeyCode.Keypad5))
-            {
-                camera.transform.Translate(Vector3.down * 150 * Time.deltaTime);
-                //Debug.Log("down arrow key is held down");
-            }
+  //          if (Input.GetKey(KeyCode.Keypad5))
+  //          {
+  //              camera.transform.Translate(Vector3.down * 150 * Time.deltaTime);
+  //              //Debug.Log("down arrow key is held down");
+  //          }
 
-            if (Input.GetKey(KeyCode.Keypad4))
-            {
-                camera.transform.RotateAround(teste.transform.position, Vector3.up, 70 * Time.deltaTime);
-                //print("left arrow key is held down");
-            }
+  //          if (Input.GetKey(KeyCode.Keypad4))
+  //          {
+  //              camera.transform.RotateAround(teste.transform.position, Vector3.up, 70 * Time.deltaTime);
+  //              //print("left arrow key is held down");
+  //          }
 
-            if (Input.GetKey(KeyCode.Keypad6))
-            {
-                camera.transform.RotateAround(teste.transform.position, Vector3.down, 70 * Time.deltaTime);
-                //print("right arrow key is held down");
-            }
+  //          if (Input.GetKey(KeyCode.Keypad6))
+  //          {
+  //              camera.transform.RotateAround(teste.transform.position, Vector3.down, 70 * Time.deltaTime);
+  //              //print("right arrow key is held down");
+  //          }
 			
-                if (Input.GetAxis("Mouse ScrollWheel") > 0f && Vector3.Distance(camera.transform.position, teste.transform.position) > 100) // forward
-                {
-                    camera.transform.Translate(Vector3.forward * 1000 * Time.deltaTime);
-                }
-                else if (Input.GetAxis("Mouse ScrollWheel") < 0f && Vector3.Distance(camera.transform.position, teste.transform.position) < 1000) // backwards
-                {
-                    camera.transform.Translate(Vector3.back * 1000 * Time.deltaTime);
-                }
+  //              if (Input.GetAxis("Mouse ScrollWheel") > 0f && Vector3.Distance(camera.transform.position, teste.transform.position) > 100) // forward
+  //              {
+  //                  camera.transform.Translate(Vector3.forward * 1000 * Time.deltaTime);
+  //              }
+  //              else if (Input.GetAxis("Mouse ScrollWheel") < 0f && Vector3.Distance(camera.transform.position, teste.transform.position) < 1000) // backwards
+  //              {
+  //                  camera.transform.Translate(Vector3.back * 1000 * Time.deltaTime);
+  //              }
             
            
-        }
+  //      }
 
 
         if (polig_criados != null) 
@@ -890,7 +981,7 @@ public class CraftingGestor2 : MonoBehaviour
             b_limpartudo.interactable = false;
         }
 
-        Debug.Log(Vector3.Distance(camera.transform.position,teste.transform.position));
+        //Debug.Log(Vector3.Distance(camera.transform.position,teste.transform.position));
 
     }
 
