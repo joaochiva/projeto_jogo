@@ -65,6 +65,10 @@ ScriptsOnlyBuild:
       Script: {instanceID: 0}
     - Class: 81
       Script: {instanceID: 0}
+    - Class: 82
+      Script: {instanceID: 0}
+    - Class: 83
+      Script: {instanceID: 0}
     - Class: 89
       Script: {instanceID: 0}
     - Class: 104
@@ -566,7 +570,7 @@ ScriptsOnlyBuild:
     className: RecorderBindings
   - hash:
       serializedVersion: 2
-      Hash: 42879bcf5a73f991076573731e22a373
+      Hash: 94149a83ac20f7e48b4e86a497459bbf
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: CraftingGestor2
@@ -951,4 +955,4 @@ ScriptsOnlyBuild:
   platform: 13
   scenePathNames:
   - Assets/Scenes/Craftar.unity
-  playerPath: C:/projectos/ProjetoFinal Jogos 0.1 alpha/jogopolignos.apk
+  playerPath: C:/projectos/jogopolignos.apk

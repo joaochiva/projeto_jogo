@@ -39,6 +39,8 @@ public class CraftingGestor2 : MonoBehaviour
     public Button b_direita;
     public Button b_esquerda;
     public Button b_menu;
+    public Button b_voltar;
+    public Button b_musica;
     public Slider s_largura;
     public Slider s_altura;
     public Slider s_profundi;
@@ -70,6 +72,10 @@ public class CraftingGestor2 : MonoBehaviour
     public Canvas cavas_menu;
     public Canvas cavas_opcoes;
 
+    public GameObject fundo_jogo;
+
+  
+
 
 
 
@@ -78,6 +84,7 @@ public class CraftingGestor2 : MonoBehaviour
     private bool etapa1 = false;
     bool posomexer = false;
     bool completo = false;
+    bool semmusica = false;
     
 
     private int score_pontos = 0;
@@ -87,6 +94,9 @@ public class CraftingGestor2 : MonoBehaviour
 	void Start()
     {
         t_admin.text = "lvl2"; //activar do menu, inicio do jogo
+
+        Screen.orientation = ScreenOrientation.Portrait;
+        cavas_opcoes.gameObject.SetActive(false);
 
         polig_array.Add(polig_cubo);
         polig_array.Add(polig_cilindro);
@@ -111,8 +121,10 @@ public class CraftingGestor2 : MonoBehaviour
         t_pontuacao.gameObject.SetActive(false);
         t_subirnivel.gameObject.SetActive(false);
         t_score.gameObject.SetActive(false);
+        b_finalizar.interactable = false;
 
         sv_formas.gameObject.SetActive(false);
+        t_admin.gameObject.SetActive(false);
 
         cavas_jogo.gameObject.SetActive(false);
         cavas_menu.gameObject.SetActive(true);
@@ -140,6 +152,9 @@ public class CraftingGestor2 : MonoBehaviour
         b_direita.onClick.AddListener(TaskOnClick303);
         b_esquerda.onClick.AddListener(TaskOnClick304);
 
+        b_musica.onClick.AddListener(TaskOnClick401);
+        b_voltar.onClick.AddListener(TaskOnClick402);
+
 
 
 
@@ -155,13 +170,36 @@ public class CraftingGestor2 : MonoBehaviour
         //polig_objectivo.transform.localScale = new Vector3(UnityEngine.Random.Range(25, 100), UnityEngine.Random.Range(25, 100), 29);
 
         teste = Instantiate(polig_arrayobjectivos[UnityEngine.Random.Range(0, 2)], new Vector3(0, 0, 0), Quaternion.identity);
-        teste.transform.transform.localScale = new Vector3(UnityEngine.Random.Range(25, 100), UnityEngine.Random.Range(25, 100), UnityEngine.Random.Range(25, 100));
+        teste.transform.transform.localScale = new Vector3(UnityEngine.Random.Range(25, 100), UnityEngine.Random.Range(25, 100), UnityEngine.Random.Range(25, 125));
 
         //s_largura = GameObject.Find("Slider_largura").GetComponent<Slider>();
 
 
 
     }
+
+	private void TaskOnClick402()
+	{
+        cavas_menu.gameObject.SetActive(true);
+        cavas_opcoes.gameObject.SetActive(false);
+    }
+
+	private void TaskOnClick401()
+	{
+		if (semmusica)
+		{
+            camera.GetComponent<AudioSource>().Play();
+            semmusica = false;
+            b_musica.GetComponentInChildren<Text>().text = "Musica : On";
+        }
+		else
+		{
+            camera.GetComponent<AudioSource>().Stop();
+            
+            b_musica.GetComponentInChildren<Text>().text = "Musica : Off";
+            semmusica = true;
+		}
+	}
 
 	private void TaskOnClick5()
 	{
@@ -214,8 +252,8 @@ public class CraftingGestor2 : MonoBehaviour
         
 	private void TaskOnClick203()
 	{
-		throw new NotImplementedException();
-	}
+        Application.Quit();
+    }
 
 	private void TaskOnClick202()
 	{
@@ -228,7 +266,8 @@ public class CraftingGestor2 : MonoBehaviour
 	{
         cavas_jogo.gameObject.SetActive(true);
         cavas_menu.gameObject.SetActive(false);
-        Debug.Log("Teste jogar");
+        t_score.gameObject.SetActive(true);
+        //Debug.Log("Teste jogar");
     }
 
 	private void TaskOnClick105()
@@ -299,6 +338,7 @@ public class CraftingGestor2 : MonoBehaviour
 
                 t_pontuacao.gameObject.SetActive(false);
                 crafter();
+               
                 //polig_criado = Instantiate(polig_array[UnityEngine.Random.Range(0, 3)], new Vector3(1, 3, 29), Quaternion.identity);
                 s_altura.gameObject.SetActive(true);
                 s_largura.gameObject.SetActive(true);
@@ -329,41 +369,60 @@ public class CraftingGestor2 : MonoBehaviour
 
     private void TaskOnClick2()
     {
-        t_pontuacao.gameObject.SetActive(false);
-        //t_score.gameObject.SetActive(false);
-        b_Getbase.interactable = true;
-        //tempo = 60.0f;
+        Destroy(teste);
+        teste = Instantiate(polig_arrayobjectivos[UnityEngine.Random.Range(0, 5)], new Vector3(0, 0, 0), Quaternion.identity);
 
+        teste.transform.transform.localScale = new Vector3(UnityEngine.Random.Range(25, 100), UnityEngine.Random.Range(25, 100), UnityEngine.Random.Range(25, 125));
 
-        if (GameObject.FindGameObjectsWithTag("editavel").Length == 8)
+        foreach (var item in polig_criados)
         {
-            Debug.Log("Nada para Limpar!");
+            Destroy(item);
+            partes = 0;
 
         }
-        else {
+        primeiroclick = false;
+        b_Getbase.interactable = true;
+        completo = false;
+        b_finalizar.interactable = false;
+        score_pontos -= 20;
+        t_score.text = "Pontos :" + score_pontos.ToString();
+        polig_criados.Clear();
 
-			foreach (var item in GameObject.FindGameObjectsWithTag("editavel"))
-			{
-				if (item.name.Contains("Clone"))
-				{
-                    Destroy(item);
-                    polig_criados.RemoveAt((polig_criados.Count-1));
-                    s_altura.gameObject.SetActive(false);
-                    s_largura.gameObject.SetActive(false);
-                    s_profundi.gameObject.SetActive(false);
-                    primeiroclick = false;
-                    return;
+        //     t_pontuacao.gameObject.SetActive(false);
+        //     //t_score.gameObject.SetActive(false);
+        //     b_Getbase.interactable = true;
+        //     //tempo = 60.0f;
 
-                }
-				else
-				{
-                    Debug.Log("Nada para Limpar!");
-                }
-                
-            }
-            
-        }
-        
+
+        //     if (GameObject.FindGameObjectsWithTag("editavel").Length == 8)
+        //     {
+        //         Debug.Log("Nada para Limpar!");
+
+        //     }
+        //     else {
+
+        //foreach (var item in GameObject.FindGameObjectsWithTag("editavel"))
+        //{
+        //	if (item.name.Contains("Clone"))
+        //	{
+        //                 Destroy(item);
+        //                 polig_criados.RemoveAt((polig_criados.Count-1));
+        //                 s_altura.gameObject.SetActive(false);
+        //                 s_largura.gameObject.SetActive(false);
+        //                 s_profundi.gameObject.SetActive(false);
+        //                 primeiroclick = false;
+        //                 return;
+
+        //             }
+        //	else
+        //	{
+        //                 Debug.Log("Nada para Limpar!");
+        //             }
+
+        //         }
+
+        //     }
+
     }
 
     private void TaskOnClick3()
@@ -380,10 +439,12 @@ public class CraftingGestor2 : MonoBehaviour
         {
             Destroy(item);
             partes = 0;
-            primeiroclick = false;
-            b_Getbase.interactable = true;
-            completo = false;
+            
         }
+        primeiroclick = false;
+        b_Getbase.interactable = true;
+        completo = false;
+        b_finalizar.interactable = false;
         polig_criados.Clear();
     }
 
@@ -750,14 +811,16 @@ public class CraftingGestor2 : MonoBehaviour
         //s_largura.minValue = polig_criado.transform.localScale.y;
         //s_altura.minValue = polig_criado.transform.localScale.x;
         t_score.gameObject.SetActive(true);
+        b_finalizar.interactable = true;
         //t_tempo.text = "60.0";
-        
+
     }
 
     void entregar() 
     {
 
         t_pontuacao.CrossFadeAlpha(1, 0, false);
+        b_finalizar.interactable = false;
 
         polig_objectivo = teste;
         var obj = polig_objectivo.transform.lossyScale;
@@ -784,13 +847,14 @@ public class CraftingGestor2 : MonoBehaviour
                     partes = 0;
                     primeiroclick = false;
                     b_Getbase.interactable = true;
+                    
                     completo = false;
                 }
                 polig_criados.Clear();
                 Destroy(teste);
                 teste = Instantiate(polig_arrayobjectivos[UnityEngine.Random.Range(0, 5)], new Vector3(0, 0, 0), Quaternion.identity);
 
-                teste.transform.transform.localScale = new Vector3(UnityEngine.Random.Range(25, 150), UnityEngine.Random.Range(25, 100), UnityEngine.Random.Range(25, 100));
+                teste.transform.transform.localScale = new Vector3(UnityEngine.Random.Range(25, 150), UnityEngine.Random.Range(25, 100), UnityEngine.Random.Range(25, 125));
 
             }
             else
@@ -931,45 +995,7 @@ public class CraftingGestor2 : MonoBehaviour
         
        
 
-		//if (posomexer)
-		//{
-            
-  //          if (Input.GetKey(KeyCode.Keypad8))
-  //          {
-                
-  //              camera.transform.Translate(Vector3.up * 150 * Time.deltaTime);
-  //              //Debug.Log("up arrow key is held down");
-  //          }
-
-  //          if (Input.GetKey(KeyCode.Keypad5))
-  //          {
-  //              camera.transform.Translate(Vector3.down * 150 * Time.deltaTime);
-  //              //Debug.Log("down arrow key is held down");
-  //          }
-
-  //          if (Input.GetKey(KeyCode.Keypad4))
-  //          {
-  //              camera.transform.RotateAround(teste.transform.position, Vector3.up, 70 * Time.deltaTime);
-  //              //print("left arrow key is held down");
-  //          }
-
-  //          if (Input.GetKey(KeyCode.Keypad6))
-  //          {
-  //              camera.transform.RotateAround(teste.transform.position, Vector3.down, 70 * Time.deltaTime);
-  //              //print("right arrow key is held down");
-  //          }
-			
-  //              if (Input.GetAxis("Mouse ScrollWheel") > 0f && Vector3.Distance(camera.transform.position, teste.transform.position) > 100) // forward
-  //              {
-  //                  camera.transform.Translate(Vector3.forward * 1000 * Time.deltaTime);
-  //              }
-  //              else if (Input.GetAxis("Mouse ScrollWheel") < 0f && Vector3.Distance(camera.transform.position, teste.transform.position) < 1000) // backwards
-  //              {
-  //                  camera.transform.Translate(Vector3.back * 1000 * Time.deltaTime);
-  //              }
-            
-           
-  //      }
+		
 
 
         if (polig_criados != null) 
@@ -981,8 +1007,17 @@ public class CraftingGestor2 : MonoBehaviour
             b_limpartudo.interactable = false;
         }
 
-        //Debug.Log(Vector3.Distance(camera.transform.position,teste.transform.position));
+		//Debug.Log(Vector3.Distance(camera.transform.position,teste.transform.position));
 
+		if (polig_criados.Count == 0)
+		{
+            b_limpartudo.interactable = false;
+		}
+		else
+		{
+            b_limpartudo.interactable = true;
+        }
+		
     }
 
 
