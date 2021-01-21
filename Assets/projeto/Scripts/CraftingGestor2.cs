@@ -222,32 +222,14 @@ public class CraftingGestor2 : MonoBehaviour
 
 	private void TaskOnClick302()
 	{
-        if (Vector3.Distance(camera.transform.position, teste.transform.position) > 100)
-        {
-            b_zoomin.interactable = true;
-            camera.transform.Translate(Vector3.back * 5000 * Time.deltaTime);
-        }
-        else
-        {
-            b_zoomin.interactable = false;
-        }
-        Debug.Log("zoom in");
+        camera.transform.Translate(Vector3.back * 5000 * Time.deltaTime);
 
     }
 
 	private void TaskOnClick301()
 	{
-		
-        if (Vector3.Distance(camera.transform.position, teste.transform.position) < 1000)
-        {
-            b_zoomout.interactable = true;
-            camera.transform.Translate(Vector3.forward * 5000 * Time.deltaTime);
-        }
-        else
-        {
-            b_zoomout.interactable = false;
-        }
-        Debug.Log("zoom out");
+
+        camera.transform.Translate(Vector3.forward * 5000 * Time.deltaTime);
     }
         
 	private void TaskOnClick203()
@@ -1017,7 +999,29 @@ public class CraftingGestor2 : MonoBehaviour
 		{
             b_limpartudo.interactable = true;
         }
-		
+
+
+        if (Vector3.Distance(camera.transform.position, teste.transform.position) < 900)
+        {
+            b_zoomout.interactable = true;
+            
+        }
+        else
+        {
+            b_zoomout.interactable = false;
+        }
+        
+
+        if (Vector3.Distance(camera.transform.position, teste.transform.position) > 170)
+        {
+            b_zoomin.interactable = true;
+            
+        }
+        else
+        {
+            b_zoomin.interactable = false;
+        }
+        
     }
 
 
